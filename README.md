@@ -15,7 +15,7 @@ A single-page gallery of all 45 images from OpenAI's [ChatGPT Images 2.0 launch]
 **Filter by category.** Six categories derived by looking at every image and prompt, not guessing:
 - Photography (15) · Comics & Manga (9) · Poster & Ad (10) · Infographic (5) · Editorial (3) · Illustration (3)
 
-**Lightbox with `?id=N` deep links.** Click any image to open a full-size lightbox. The URL updates so individual images are shareable. Arrow keys and Escape work. Filters carry into the lightbox — arrow navigation skips filtered-out items.
+**Lightbox with `?id=N` deep links.** Click any image to open a full-size lightbox. The URL updates so individual images are shareable. Arrow keys, `j/k`, and Escape work. Filters carry into the lightbox — navigation skips filtered-out items.
 
 **"Try in ChatGPT" via `?q=`** Opens ChatGPT with the prompt pre-filled. No known URL param forces image generation mode; ChatGPT recognizes image prompts automatically.
 
@@ -24,3 +24,11 @@ A single-page gallery of all 45 images from OpenAI's [ChatGPT Images 2.0 launch]
 ## Notes
 
 All images are AI-generated outputs collected from OpenAI's public announcement. Prompts sourced from `chatgpt-images-2-0-prompts.md`, which mirrors the original blog post credits.
+
+## Harness notes
+
+- `index.html` is the whole app: structure, styles, image data, and lightbox logic all live there.
+- The lightbox contract is stable: `#lightbox`, `#lb-prev`, `#lb-next`, `#lb-close`, `#lb-copy-btn`, and `#lb-chatgpt-link` are the primary hooks.
+- Opening a lightbox image pushes `?id=N`; closing it returns to the base pathname.
+- Keyboard controls while the lightbox is open: `ArrowLeft`/`k` for previous, `ArrowRight`/`j` for next, `Escape` to close.
+- Local-only harness docs can mirror the selectors and URL contract above without needing changes to the shipped site.

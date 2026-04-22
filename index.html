@@ -4,6 +4,8 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>ChatGPT Images 2.0 — Gallery</title>
+  <meta name="theme-color" content="#0e0d0a">
+  <link rel="icon" href="favicon.svg" type="image/svg+xml">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700&family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,600;1,8..60,400&display=swap" rel="stylesheet">
@@ -532,7 +534,7 @@
 
 
 <!-- Lightbox -->
-<div class="lightbox" id="lightbox" aria-modal="true" role="dialog">
+<div class="lightbox" id="lightbox" aria-modal="true" aria-labelledby="lb-title" aria-describedby="lb-note" aria-hidden="true" role="dialog" tabindex="-1">
   <div class="lb-inner">
     <div class="lb-img-wrap">
       <img class="lb-img" id="lb-img" src="" alt="">
@@ -545,7 +547,7 @@
       <hr class="lb-divider">
       <div class="lb-prompt-label">Prompt</div>
       <div class="lb-prompt" id="lb-prompt"></div>
-      <div class="lb-note">Opens ChatGPT with prompt pre-filled — press Enter to send. ChatGPT will recognize image requests automatically.</div>
+      <div class="lb-note" id="lb-note">Opens ChatGPT with the prompt pre-filled; press Enter there to send. Keyboard here: &larr;/&rarr; or j/k to navigate, Esc to close.</div>
       <div class="lb-actions">
         <button class="btn btn-ghost" id="lb-copy-btn">
           <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
@@ -948,6 +950,7 @@ if (savedView === 'scan') setView('scan');
 // ── Lightbox ──────────────────────────────────────────────
 
 let currentId = null;
+let lastFocusedElement = null;
 
 const lightbox = document.getElementById('lightbox');
 const lbImg    = document.getElementById('lb-img');
@@ -961,6 +964,11 @@ const lbNext   = document.getElementById('lb-next');
 function openLightbox(id) {
   const img = IMAGES.find(i => i.id === id);
   if (!img) return;
+
+  if (currentId === null && document.activeElement instanceof HTMLElement) {
+    lastFocusedElement = document.activeElement;
+  }
+
   currentId = id;
 
   lbImg.src            = img.file;
@@ -976,15 +984,25 @@ function openLightbox(id) {
   lbNext.disabled = idx === visible.length - 1;
 
   lightbox.classList.add('open');
+  lightbox.setAttribute('aria-hidden', 'false');
   document.body.style.overflow = 'hidden';
+  lightbox.focus();
   history.pushState(null, '', `?id=${id}`);
 }
 
 function closeLightbox() {
+  if (currentId === null) return;
+
   lightbox.classList.remove('open');
+  lightbox.setAttribute('aria-hidden', 'true');
   document.body.style.overflow = '';
   currentId = null;
   history.pushState(null, '', location.pathname);
+
+  if (lastFocusedElement instanceof HTMLElement) {
+    lastFocusedElement.focus();
+  }
+  lastFocusedElement = null;
 }
 
 function navigate(dir) {
@@ -1007,9 +1025,22 @@ lightbox.addEventListener('click', e => { if (e.target === lightbox) closeLightb
 
 document.addEventListener('keydown', e => {
   if (!currentId) return;
-  if (e.key === 'Escape')     closeLightbox();
-  if (e.key === 'ArrowLeft')  navigate(-1);
-  if (e.key === 'ArrowRight') navigate(1);
+  if (e.metaKey || e.ctrlKey || e.altKey) return;
+
+  const key = e.key.length === 1 ? e.key.toLowerCase() : e.key;
+
+  if (key === 'Escape') {
+    e.preventDefault();
+    closeLightbox();
+  }
+  if (key === 'ArrowLeft' || key === 'k') {
+    e.preventDefault();
+    navigate(-1);
+  }
+  if (key === 'ArrowRight' || key === 'j') {
+    e.preventDefault();
+    navigate(1);
+  }
 });
 
 // ── URL param on load ─────────────────────────────────────

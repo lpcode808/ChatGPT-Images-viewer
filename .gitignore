@@ -3,3 +3,12 @@
 .LSOverride
 Thumbs.db
 *.png
+
+# Local AI / harness handoff docs
+AGENTS.md
+CLAUDE.md
+CODEX.md
+CURSOR.md
+GEMINI.md
+COPILOT.md
+*.local.md
