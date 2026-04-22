@@ -1,5 +1,7 @@
 # ChatGPT Images 2.0 — Prompt Gallery
 
+**[→ View live site](https://lpcode808.github.io/ChatGPT-Images-viewer/)**
+
 A single-page gallery of all 45 images from OpenAI's [ChatGPT Images 2.0 launch](https://openai.com/index/introducing-chatgpt-images-2-0/), with the original prompts and a direct "Try in ChatGPT" link for each.
 
 ## Design decisions (TL;DR)
